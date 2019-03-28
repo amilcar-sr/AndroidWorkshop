@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Android Workshop</string>
+    <string name="movie_poster_description">Movie Poster</string>
+    <string name="rating_label_text">RATING:</string>
+</resources>
