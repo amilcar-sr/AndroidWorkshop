@@ -28,21 +28,25 @@ public class NetworkManager {
     private static MovieAPI movieAPI;
 
     public static void init() {
-        //TODO: [10] Create a client that will insert the API_KEY param into every request
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
-            @NotNull
-            @Override
-            public Response intercept(@NotNull Chain chain) throws IOException {
-                Request request = chain.request();
-                HttpUrl url = request.url().newBuilder().addQueryParameter(API_KEY_PARAM, "fc92c7ccbf0cda485182f22d68394913").build();
-                request = request.newBuilder().url(url).build();
-                return chain.proceed(request);
-            }
-        }).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build(); //TODO: [11] Add logging interceptor
+        //TODO: [10] Create a client that will insert the API_KEY param into every request, if movieAPI is null, throw exception otherwise
+        if (movieAPI == null) {
+            OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+                @NotNull
+                @Override
+                public Response intercept(@NotNull Chain chain) throws IOException {
+                    Request request = chain.request();
+                    HttpUrl url = request.url().newBuilder().addQueryParameter(API_KEY_PARAM, "fc92c7ccbf0cda485182f22d68394913").build();
+                    request = request.newBuilder().url(url).build();
+                    return chain.proceed(request);
+                }
+            }).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build(); //TODO: [11] Add logging interceptor
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).client(client).addConverterFactory(GsonConverterFactory.create()).build();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).client(client).addConverterFactory(GsonConverterFactory.create()).build();
 
-        movieAPI = retrofit.create(MovieAPI.class);
+            movieAPI = retrofit.create(MovieAPI.class);
+        } else {
+            throw new RuntimeException("The NetworkManager must be initialized just once in the Application class.");
+        }
     }
 
     //TODO: [11] Add method to get the API call for popular movies
